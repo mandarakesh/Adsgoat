@@ -69,4 +69,4 @@ jobs:
 
       - name: Executing remote commands using SSH
         run: |
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "sudo apt-get -y update && sudo apt-get install -y apache2 && sudo systemctl start apache2 && sudo systemctl enable apache2 && cd ${secrets.TARGET_DIR} && sudo mv index /var/www/"
+          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "sudo apt-get -y update && sudo apt-get install -y apache2 && sudo systemctl start apache2 && sudo systemctl enable apache2 && cd ${secrets.TARGET_DIR} && sudo mv index /var/www/index"
