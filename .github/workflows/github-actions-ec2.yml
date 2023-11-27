@@ -67,11 +67,16 @@ jobs:
 
       - name: Checkout the files
         uses: actions/checkout@v2
-      
+
       - name: Deploy to Server 1
         run: |
           echo "Copying files to the remote server"
-          scp -i ${{ secrets.EC2_SSH_KEY }} -r ./path/to/local/files ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }}:${{ secrets.TARGET_DIR }}
+          scp -i "${{ secrets.EC2_SSH_KEY }}" -r ./path/to/local/files "${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }}:${{ secrets.TARGET_DIR }}"
+
+      # - name: Deploy to Server 1
+      #   run: |
+      #     echo "Copying files to the remote server"
+      #     scp -i ${{ secrets.EC2_SSH_KEY }} -r ./path/to/local/files ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }}:${{ secrets.TARGET_DIR }}
 
       - name: Executing remote commands using SSH
         run: |
