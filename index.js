@@ -4,11 +4,11 @@ import axios from 'axios';
 
 const app=express();
 const PORT=5001;
-const uri='mongodb+srv://adsgoat:adsgoat2023@adsgoat.6uez9.mongodb.net/Adsgoat?retryWrites=true&w=majority';
+const uri='mongodb+srv://rakesh:185d1a0151@project.phg7vjo.mongodb.net/Adsgoat?retryWrites=true&w=majority';
 const client=new MongoClient(uri,{ useNewUrlParser: true, useUnifiedTopology: true });
 
 
-let database;
+// let database;
 
 const startServer = async ()=>{
     try{
@@ -35,44 +35,80 @@ app.post('/ads/rakesh',(req,res)=>{
         return token;
       }
       
-      // Example: Generate a token with a length of 10
-      const randomToken = generateRandomToken(32);
+      const randomToken = generateRandomToken(150);
       console.log(randomToken);
 
 });
 
+async function Storingtoken(){
+  // const response = await axios.post(`http://localhost:${PORT}/ads/rakesh`);
+      // console.log(response.data)
+    //  const  token3=response.data
+  const token3 = "8dIEOgHedjZTqQo15LDbcDBWMLsOUEe8eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkc2dvYXQiLCJpYXQiOjE3MDA4MDQ0NjUsImV4cCI6MTcwMDg5MDg2NX0.czm-qBRevTdNYBSbNHS";
 
+  try {
+    await client.connect();
+    await client.db('TestData').collection('Modified_Token').deleteMany();
+    const database1 = await client.db('TestData').collection('Modified_Token').insertOne({ token: token3 });
 
+    // console.log(database1);
+
+    return database1.ops; // Return the inserted document
+  } finally {
+  }
+
+}
 
 async function Authentication(req, res, next) {
-    try {
-    //   const response = await axios.post(`http://localhost:${PORT}/ads/rakesh`);
-      const token = "8dIEOgHedjZTqQo15LDbcDBWMLsOUEe8";
-      console.log(token);
+  Storingtoken()
+  await client.connect();
+      const database2 = await client.db('TestData').collection('Modified_Token').find().toArray();
+      // console.log(database2[0].token)
   
+  try {
+      
+      // const token = "8dIEOgHedjZTqQo15LDbcDBWMLsOUEe8eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkc2dvYXQiLCJpYXQiOjE3MDA4MDQ0NjUsImV4cCI6MTcwMDg5MDg2NX0.czm-qBRevTdNYBSbNHSP1eNpeipPJXC5DOcygT9PqFo";
+      // console.log(token);
+      const token=database2[0].token
+      
+      const token1=req.headers.authorization
+      let  token2=""
+      if (token1===""){
+        res.status(400).json("enter Token")
+        res.end();
+
+      }else{
+         token2=token1.split(" ")[1]
+            }
+      // console.log(token1)
+      
+  if(token===token2){
       if (!token) {
-        console.log("Token is invalid. Authentication failed.");
+        console.log("Token is invalid.");
         res.status(401).json({ error: "Authentication failed" });
       } else {
-        console.log("Token is valid. Authentication successful!");
-        req.token = token;
-        
+        console.log("Token is Valid!");
+        req.token = token2;
         next();
         
       }
-    } catch (error) {
+    } else{
+      console.log("enter valid token")
+      res.status(400).json("Enter Valid Token")
+        res.end();
+    }
+  }catch (error) {
       console.error('Error fetching token:', error.message);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(400).json({ error: "Enter Valid Token" });
     }
   }
 
 
 
 app.get("/ads/result", Authentication, async (req, res,mail) => {
-    console.log("done")
     try {
       await client.connect();
-      const database = client.db('Adsgoat').collection('users').find({ email: mail, role: 'user' }).project({ _id: 0, createdAt: 0, updatedAt: 0 }).toArray();
+      const database = client.db('TestData').collection('Tonic_Daily').find().toArray();
       if(!database){
         console.log("Database is not connected")
       }else{
@@ -94,49 +130,3 @@ app.get("/ads/result", Authentication, async (req, res,mail) => {
 
 
 
-
-
-
-
-
-  
-// async function Authentication(req, res, next) {
-//     const user = {
-//         id: '123',
-//         token: '', // Stored token
-//         tokenExpirationDate: new Date() // Initial expiration date
-//       };
-//     try {
-//       const userId = req.user.id;
-  
-//       // Check if the user has a stored token and its expiration date
-//       const storedToken = req.user.token;
-//       const tokenExpirationDate = req.user.tokenExpirationDate;
-  
-//       // If there's no stored token or it has expired, generate a new one
-//       if (!storedToken || new Date() > new Date(tokenExpirationDate)) {
-//         const newTokenResponse = await axios.post(`http://localhost:${PORT}/ads/rakesh`);
-//         const newToken = newTokenResponse.data;
-  
-//         // Update user information with the new token and its expiration date
-//         req.user.token = newToken;
-//         req.user.tokenExpirationDate = new Date();
-//         req.user.tokenExpirationDate.setMonth(req.user.tokenExpirationDate.getMonth() + 3);
-  
-//         console.log('New Token:', newToken);
-//       }
-  
-//       // Continue with the authentication process using the stored or newly generated token
-//       console.log('Token is valid. Authentication successful!');
-//       req.token = req.user.token;
-  
-//       next();
-  
-//     } catch (error) {
-//       console.error('Error fetching or generating token:', error.message);
-//       res.status(500).json({ error: "Internal server error" });
-//     }
-  
-  
-
-// }
