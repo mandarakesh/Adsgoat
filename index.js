@@ -14,12 +14,14 @@ const startServer = async ()=>{
     try{
         app.listen(PORT,()=>{
         console.log("Server is Connected",`${PORT}`)
-    })       
+    })
     }catch(e){
         console.error("Server is not connected",e)
     }
 }
 startServer()
+
+
 
 app.post('/ads/rakesh',(req,res)=>{
     function generateRandomToken(length) {
@@ -35,14 +37,16 @@ app.post('/ads/rakesh',(req,res)=>{
         return token;
       }
       
-      const randomToken = generateRandomToken(150);
-      console.log(randomToken);
+      const randomToken = generateRandomToken(164);
+      // console.log(randomToken);
 
 });
 
+
+
 async function Storingtoken(){
   // const response = await axios.post(`http://localhost:${PORT}/ads/rakesh`);
-      // console.log(response.data)
+  //     console.log(response.data)
     //  const  token3=response.data
   const token3 = "8dIEOgHedjZTqQo15LDbcDBWMLsOUEe8eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkc2dvYXQiLCJpYXQiOjE3MDA4MDQ0NjUsImV4cCI6MTcwMDg5MDg2NX0.czm-qBRevTdNYBSbNHS";
 
@@ -52,25 +56,21 @@ async function Storingtoken(){
     const database1 = await client.db('TestData').collection('Modified_Token').insertOne({ token: token3 });
 
     // console.log(database1);
-
-    return database1.ops; // Return the inserted document
-  } finally {
+  } catch(error){
+    console.err("Database not connected")
   }
-
+  
 }
+
+
 
 async function Authentication(req, res, next) {
   Storingtoken()
-  await client.connect();
-      const database2 = await client.db('TestData').collection('Modified_Token').find().toArray();
-      // console.log(database2[0].token)
-  
   try {
-      
-      // const token = "8dIEOgHedjZTqQo15LDbcDBWMLsOUEe8eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkc2dvYXQiLCJpYXQiOjE3MDA4MDQ0NjUsImV4cCI6MTcwMDg5MDg2NX0.czm-qBRevTdNYBSbNHSP1eNpeipPJXC5DOcygT9PqFo";
-      // console.log(token);
+    
+      const database2 = await client.db('TestData').collection('Modified_Token').find().toArray();
       const token=database2[0].token
-      
+      console.log(token);
       const token1=req.headers.authorization
       let  token2=""
       if (token1===""){
@@ -105,9 +105,10 @@ async function Authentication(req, res, next) {
 
 
 
-app.get("/ads/result", Authentication, async (req, res,mail) => {
-    try {
-      await client.connect();
+
+
+app.get("/ads/result", Authentication, async (req, res) => {
+    try {      
       const database = client.db('TestData').collection('Tonic_Daily').find().toArray();
       if(!database){
         console.log("Database is not connected")
@@ -116,12 +117,14 @@ app.get("/ads/result", Authentication, async (req, res,mail) => {
         res.json(data);
         console.log("Fetched Data:",data.length)
 
-        await client.close();
-      console.log("db closed")
+        
       }
     } catch (err) {
       res.status(400).json(err);
       console.error("Error", err);
+    }finally{
+      await client.close();
+      console.log("db closed")
     }
   });
   
