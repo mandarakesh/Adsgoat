@@ -8,8 +8,6 @@ const uri='mongodb+srv://rakesh:185d1a0151@project.phg7vjo.mongodb.net/Adsgoat?r
 const client=new MongoClient(uri,{ useNewUrlParser: true, useUnifiedTopology: true });
 
 
-// let database;
-
 const startServer = async ()=>{
     try{
         app.listen(PORT,()=>{
